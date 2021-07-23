@@ -1,2 +1,4 @@
 .nfs*
+*.jugdata/
 /.tmp/
+/logs/
