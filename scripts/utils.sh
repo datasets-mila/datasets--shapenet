@@ -124,6 +124,34 @@ function init_venv {
 	python3 -m pip install --no-index --upgrade pip
 }
 
+function print_annex_checksum {
+	while [[ $# -gt 0 ]]
+	do
+		local _arg="$1"; shift
+		case "${_arg}" in
+			-c | --checksum) local _CHECKSUM="$1"; shift ;;
+			-h | --help)
+			>&2 echo "Options for $(basename "$0") are:"
+			>&2 echo "[-c | --checksum CHECKSUM] checksum to print"
+			exit 1
+			;;
+			--) break ;;
+			*) >&2 echo "Unknown option [${_arg}]"; exit 3 ;;
+		esac
+	done
+
+	for _file in "$@"
+	do
+		local _annex_file=`ls -l -- "${_file}" | grep -o ".git/annex/objects/.*/${_CHECKSUM}.*"`
+		if [[ ! -f "${_annex_file}" ]]
+		then
+			continue
+		fi
+		local _checksum=`echo "${_annex_file%.*}" | xargs basename | grep -oEe"--.*"`
+		echo "${_checksum:2}  ${_file}"
+	done
+}
+
 function unshare_mount {
 	if [[ ${EUID} -ne 0 ]]
 	then
