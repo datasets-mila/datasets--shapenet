@@ -147,8 +147,9 @@ function print_annex_checksum {
 		then
 			continue
 		fi
-		local _checksum=`echo "${_annex_file%.*}" | xargs basename | grep -oEe"--.*"`
-		echo "${_checksum:2}  ${_file}"
+		local _checksum=`echo "${_annex_file}" | xargs basename`
+		local _checksum=${_checksum##*--}
+		echo "${_checksum%%.*}  ${_file}"
 	done
 }
 
